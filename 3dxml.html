@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>xeokit Example</title>
+    <style>
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        user-select: none;
+      }
+
+      #myCanvas {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: lightblue;
+        background-image: linear-gradient(lightblue, white);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+  </body>
+  <script id="source" type="module">
+    import {
+      Viewer,
+      XML3DLoaderPlugin,
+    } from 'https://cdn.jsdelivr.net/npm/@xeokit/xeokit-sdk/dist/xeokit-sdk.es.min.js';
+
+    /*const viewer = new Viewer({
+      canvasId: 'myCanvas',
+      transparent: true,
+    });
+
+    viewer.camera.eye = [-3.933, 2.855, 27.018];
+    viewer.camera.look = [4.4, 3.724, 8.899];
+    viewer.camera.up = [-0.018, 0.999, 0.039];
+
+    const webIFCLoader = new WebIFCLoaderPlugin(viewer, {
+      wasmPath: 'https://cdn.jsdelivr.net/npm/@xeokit/xeokit-sdk/dist/',
+    });
+
+    const model = webIFCLoader.load({
+      src: 'Duplex.ifc',
+      edges: true,
+    });*/
+    const viewer = new Viewer({
+      canvasId: 'myCanvas',
+    });
+
+    // Add an XML3DLoaderPlugin to the Viewer
+    var plugin = new XML3DLoaderPlugin(viewer, {
+      id: 'XML3DLoader', // Default value
+      workerScriptsPath: '/zipjs/', // Path to zip.js workers dir
+    });
+
+    // Load the 3DXML model
+    var model = plugin.load({
+      // Model is an Entity
+      id: 'myModel',
+      src: 'zipjs/models/1.3dxml',
+      scale: [0.1, 0.1, 0.1],
+      rotate: [90, 0, 0],
+      translate: [100, 0, 0],
+      edges: true,
+    });
+
+    // When the model has loaded, fit it to view
+    model.on('loaded', function () {
+      viewer.cameraFlight.flyTo(model);
+    });
+
+    // Update properties of the model via the entity
+    model.highlighted = true;
+
+    // Find the model Entity by ID
+    model = viewer.scene.models['myModel'];
+
+    // Destroy the model
+    model.destroy();
+  </script>
+</html>
